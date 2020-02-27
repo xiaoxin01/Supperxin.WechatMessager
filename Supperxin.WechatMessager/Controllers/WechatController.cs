@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Senparc.Weixin.MP;
 using Senparc.Weixin.MP.Entities.Request;
+using Supperxin.WechatMessager.MessageHandler;
 using Supperxin.WechatMessager.Model;
 
 namespace Supperxin.WechatMessager.Controllers
@@ -10,10 +13,12 @@ namespace Supperxin.WechatMessager.Controllers
     public class WechatController : ControllerBase
     {
         private readonly WechatSetting _wechatSetting;
+        private readonly ILogger<WechatController> _logger;
 
-        public WechatController(WechatSetting wechatSetting)
+        public WechatController(WechatSetting wechatSetting, ILogger<WechatController> logger)
         {
             _wechatSetting = wechatSetting;
+            _logger = logger;
         }
         /// <summary>
         /// 微信后台验证地址（使用Get），微信后台的“接口配置信息”的Url填写如：http://weixin.senparc.com/weixin
@@ -34,24 +39,40 @@ namespace Supperxin.WechatMessager.Controllers
             }
         }
 
-        // [HttpPost]
-        // [ActionName("Index")]
-        // public ActionResult Post(PostModel postModel)
-        // {
-        //     if (!CheckSignature.Check(postModel.Signature, postModel.Timestamp, postModel.Nonce, Token))
-        //     {
-        //         return Content("参数错误！");
-        //     }
+        [HttpPost]
+        [ActionName("Index")]
+        public async System.Threading.Tasks.Task<ActionResult> PostAsync([FromQuery] PostModel postModel)
+        {
+            if (!CheckSignature.Check(postModel.Signature, postModel.Timestamp, postModel.Nonce, _wechatSetting.Token))
+            {
+                _logger.LogError("参数错误！");
+                return Content("参数错误！");
+            }
 
-        //     postModel.Token = Token;
-        //     postModel.EncodingAESKey = EncodingAESKey;//根据自己后台的设置保持一致
-        //     postModel.AppId = AppId;//根据自己后台的设置保持一致
+            postModel.Token = _wechatSetting.Token;
+            // postModel.EncodingAESKey = EncodingAESKey;//根据自己后台的设置保持一致
+            postModel.AppId = _wechatSetting.AppID;//根据自己后台的设置保持一致
 
-        //     var messageHandler = new CustomMessageHandler(Request.InputStream, postModel);//接收消息（第一步）
+            #region // Add for read Request.Body multiple times
+            {
+                Request.EnableBuffering();
+                var reader = new System.IO.StreamReader(Request.Body, encoding: System.Text.Encoding.UTF8);
+                {
+                    var body = await reader.ReadToEndAsync();
+                    _logger.LogInformation(body);
+                    // Do some processing with body…
+                    // Reset the request body stream position so the next middleware can read it
+                    Request.Body.Position = 0;
+                }
+            }
+            #endregion
 
-        //     messageHandler.Execute();//执行微信处理过程（第二步）
+            var messageHandler = new CustomMessageHandler(Request.Body, postModel);//接收消息（第一步）
+            Request.Body.Position = 0;
 
-        //     return new FixWeixinBugWeixinResult(messageHandler);//返回（第三步）
-        // }
+            messageHandler.Execute();//执行微信处理过程（第二步）
+
+            return Content(messageHandler.ResponseDocument.ToString()); ;//返回（第三步）
+        }
     }
 }
