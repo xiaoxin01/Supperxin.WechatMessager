@@ -2,6 +2,37 @@
 
 ## What can I do
 
+利用微信测试号，通过web请求发送消息到手机上。
+
+## Demo
+
+1. 微信扫码测试号关注：
+
+![](http://mmbiz.qpic.cn/mmbiz_jpg/qt4Br1q5Yy5vF8tjhFmNKPJV6JESuAXGlZRboJlVibUjLiaNGqjjc5nuFxMqh1thlndjiaM5xGwJrztnsrNybUVww/0)
+
+2. 接收测试号消息
+
+```
+感谢订阅，您的专属消息地址为： http://wechat.supperxin.com/message/马赛克
+
+您可以访问如下链接来测试：
+
+http://wechat.supperxin.com/message/马赛克?title=MessageTitle&content=MessageContent
+```
+
+3. 发送消息
+
+给如上地址发送get请求，可选title和content参数
+
+4. 效果
+
+
+![36WmNV.jpg](https://s2.ax1x.com/2020/03/01/36WmNV.jpg)
+
+![36WK9U.jpg](https://s2.ax1x.com/2020/03/01/36WK9U.jpg)
+
+![36WnhT.jpg](https://s2.ax1x.com/2020/03/01/36WnhT.jpg)
+
 ## How to use
 
 1. 申请微信测试号及相关设定
