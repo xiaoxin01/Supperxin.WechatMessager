@@ -26,12 +26,17 @@ http://wechat.supperxin.com/message/马赛克?title=MessageTitle&content=Message
 
 4. 效果
 
-
 ![36WmNV.jpg](https://s2.ax1x.com/2020/03/01/36WmNV.jpg)
 
 ![36WK9U.jpg](https://s2.ax1x.com/2020/03/01/36WK9U.jpg)
 
 ![36WnhT.jpg](https://s2.ax1x.com/2020/03/01/36WnhT.jpg)
+
+## Requirement
+
+1. 一台服务器
+2. 一个域名及域名解析
+3. 微信号
 
 ## How to use
 
@@ -72,9 +77,13 @@ vi appsettings.Production.json
   "Wechat": {
     "AppID": "",
     "AppSecret": "",
-    "TemplateMessageID": ""
+    "TemplateMessageID": "",
+    "Token": "",
+    "WechatMessageUrl": ""
   },
 ```
+
+其中，WechatMessageUrl为即将搭建的消息服务器请求地址，格式为：http://[DNS]/message/
 
 构建和运行服务：
 
@@ -84,8 +93,18 @@ docker build . -f ./Supperxin.WechatMessager/Dockerfile -t wechat-messager
 docker run --name wechat_messager_1 -p 5008:80 --rm wechat-messager
 ```
 
-3. 发送消息
+3. 配置Nginx
+
+配置Nginx，转发DNS请求到5008端口
+
+4. 配置微信测试号的“接口配置信息”部分
+
+URL格式为：http://[DNS]/wechat，Token输入appsettings.Production.json中配置的内容
+
+完成之后，微信会向服务器发送验证信息，能够正常响应则通过。
+
+5. 发送消息
 
 向服务器发送一条get消息即可：
 
-    http://[ip]:5008/message/[userID]?title=this is title&content=this is content
+    http://[DNS]/message/[userID]?title=this is title&content=this is content
