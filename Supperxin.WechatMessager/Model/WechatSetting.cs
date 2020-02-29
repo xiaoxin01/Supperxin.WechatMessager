@@ -6,5 +6,6 @@ namespace Supperxin.WechatMessager.Model
         public string AppSecret { get; set; }
         public string Token { get; set; }
         public string TemplateMessageID { get; set; }
+        public string WechatMessageUrl { get; set; }
     }
 }

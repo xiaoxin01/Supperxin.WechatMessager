@@ -67,7 +67,7 @@ namespace Supperxin.WechatMessager.Controllers
             }
             #endregion
 
-            var messageHandler = new CustomMessageHandler(Request.Body, postModel);//接收消息（第一步）
+            var messageHandler = new CustomMessageHandler(Request.Body, postModel, _wechatSetting);//接收消息（第一步）
             Request.Body.Position = 0;
 
             messageHandler.Execute();//执行微信处理过程（第二步）
