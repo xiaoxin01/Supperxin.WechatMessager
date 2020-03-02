@@ -26,7 +26,7 @@ namespace Supperxin.WechatMessager.Services
                 }
 
                 entry.Value = result.access_token;
-                entry.SlidingExpiration = System.TimeSpan.FromSeconds(result.expires_in);
+                entry.AbsoluteExpirationRelativeToNow = System.TimeSpan.FromSeconds(result.expires_in - 60);
 
                 return result.access_token;
             });
