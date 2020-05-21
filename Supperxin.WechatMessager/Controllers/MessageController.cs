@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Senparc.Weixin.MP.AdvancedAPIs.TemplateMessage;
 using Supperxin.WechatMessager.Model;
 using Supperxin.WechatMessager.Services;
 
@@ -19,6 +20,23 @@ namespace Supperxin.WechatMessager.Controllers
         [HttpGet("{id}")]
         public async System.Threading.Tasks.Task<ActionResult> GetAsync(string id, [FromQuery] SendMessageModel messageModel)
         {
+            var result = await SendTemplateMessageAsync(messageModel.Title, messageModel.Content, id);
+
+            return new JsonResult(result);
+        }
+
+        [HttpPost("{id}")]
+        public async System.Threading.Tasks.Task<ActionResult> PostAsync(string id, [FromQuery] SendMessageModel messageModel)
+        {
+            var result = await SendTemplateMessageAsync(messageModel.Title, messageModel.Content, id);
+
+            return new JsonResult(result);
+        }
+
+        private async System.Threading.Tasks.Task<SendTemplateMessageResult> SendTemplateMessageAsync(
+            string title, string content, string openID
+        )
+        {
 
             // Senparc.Weixin.MP.AdvancedAPIs.TemplateApi.SendTemplateMessage
             var accesstoken = await _accessTokenService.GetAccessToken(_wechatSetting.AppID, _wechatSetting.AppSecret);
@@ -29,19 +47,19 @@ namespace Supperxin.WechatMessager.Controllers
             {
                 title = new
                 {
-                    value = messageModel.Title,
+                    value = title,
                     color = "#cc2900"
                 },
                 content = new
                 {
-                    value = messageModel.Content,
+                    value = content,
                     color = "#173177"
                 }
             };
-            var result = await Senparc.Weixin.MP.AdvancedAPIs.TemplateApi.SendTemplateMessageAsync(accesstoken, id,
+            var result = await Senparc.Weixin.MP.AdvancedAPIs.TemplateApi.SendTemplateMessageAsync(accesstoken, openID,
             _wechatSetting.TemplateMessageID, "", data);
 
-            return new JsonResult(result);
+            return result;
         }
     }
 }
