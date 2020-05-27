@@ -90,7 +90,9 @@ vi appsettings.Production.json
 ```bash
 cd ..
 docker build . -f ./Supperxin.WechatMessager/Dockerfile -t wechat-messager
-docker run --name wechat_messager_1 -p 5008:80 --rm wechat-messager
+docker stop wechat_messager_1
+docker run --name wechat_messager_1 -p 5008:80 --rm -d wechat-messager
+
 ```
 
 3. 配置Nginx
