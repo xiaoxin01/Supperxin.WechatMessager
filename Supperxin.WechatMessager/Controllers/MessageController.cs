@@ -26,9 +26,10 @@ namespace Supperxin.WechatMessager.Controllers
         }
 
         [HttpPost("{id}")]
-        public async System.Threading.Tasks.Task<ActionResult> PostAsync(string id, [FromQuery] SendMessageModel messageModel)
+        public async System.Threading.Tasks.Task<ActionResult> PostAsync(string id,
+            [FromBody] GrafanaWebhookModel webhookModel)
         {
-            var result = await SendTemplateMessageAsync(messageModel.Title, messageModel.Content, id);
+            var result = await SendTemplateMessageAsync(webhookModel.title, webhookModel.message, id);
 
             return new JsonResult(result);
         }
